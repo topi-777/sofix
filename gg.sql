@@ -1,22 +1,18 @@
--- Crear la Base de Datos
-CREATE DATABASE optica_db;
-USE optica_db;
-
 -- Tabla de Usuarios (Registro)
 CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL, -- Debe almacenarse hasheada en un entorno real
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    password VARCHAR(255) NOT NULL, -- Recuerda almacenar la contraseña hasheada (ej. con bcrypt)
+    fecha_registro TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Tabla de Productos (Catálogo)
 CREATE TABLE productos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
-    precio DECIMAL(10, 2) NOT NULL,
+    precio NUMERIC(10, 2) NOT NULL,
     stock INT NOT NULL DEFAULT 10,
     imagen_url VARCHAR(255)
 );
@@ -29,20 +25,20 @@ INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url) VALUES
 
 -- Tabla de Pedidos (Compras)
 CREATE TABLE pedidos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     usuario_id INT NOT NULL,
-    fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    total DECIMAL(10, 2) NOT NULL,
+    fecha_pedido TIMESTAMPTZ DEFAULT NOW(),
+    total NUMERIC(10, 2) NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
 -- Tabla de Detalle del Pedido (Productos comprados en cada orden)
 CREATE TABLE detalle_pedidos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     pedido_id INT NOT NULL,
     producto_id INT NOT NULL,
     cantidad INT NOT NULL,
-    precio_unitario DECIMAL(10, 2) NOT NULL,
+    precio_unitario NUMERIC(10, 2) NOT NULL,
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
     FOREIGN KEY (producto_id) REFERENCES productos(id)
 );
